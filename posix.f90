@@ -86,7 +86,6 @@ module posix
   end type c_sockaddr_storage
 
   
-  ! Not interoperable due to pointers.
   type, bind(C) :: c_addrinfo
     integer(c_int) :: ai_flags
     integer(c_int) :: ai_family
@@ -98,16 +97,12 @@ module posix
     type(c_ptr) :: ai_next
   end type c_addrinfo
 
-  ! popen  
   interface
     type (c_ptr) function c_popen(command, mode) bind(C, name='popen')
       use, intrinsic :: ISO_C_BINDING
       character(kind=c_char), dimension(*) :: command, mode
     end function
-  end interface
 
-  ! fgets  
-  interface
     type (c_ptr) function c_fgets(str, siz, stream) bind(C, name='fgets')
       use, intrinsic :: ISO_C_BINDING
       ! assumed size, or any shape works here, but not assume shape...?
@@ -115,87 +110,60 @@ module posix
       integer(kind=c_int), value :: siz
       type (c_ptr), value :: stream
     end function
-  end interface
 
-  ! pclose  
-  interface
     integer(c_int) function c_pclose(handle) bind(C, name='pclose')
     use, intrinsic :: ISO_C_BINDING
     type (c_ptr), value :: handle
     end function
-  end interface
 
-  ! socket
-  interface
     integer(c_int) function c_socket(domain, type, protocol) bind(C, name='socket')
       use, intrinsic :: iso_c_binding
       integer(kind=c_int), value :: domain, type, protocol
     end function c_socket
-  end interface
 
-  interface
     integer(c_int) function c_setsockopt(socket, level, option_name, option_value, option_len) bind(c, name='setsockopt')
       use, intrinsic :: iso_c_binding
       integer(c_int), value :: socket, level, option_name
       type(c_ptr), value :: option_value, option_len
     end function c_setsockopt
-  end interface
 
-  ! bind
-  interface
     integer(c_int) function c_bind(sockfd, sockaddr, addrlen) bind(C, name='bind')
       use, intrinsic :: iso_c_binding
       type(c_ptr), value :: sockaddr
       integer(kind=c_int), value :: sockfd
       integer(c_size_t), value :: addrlen
     end function c_bind
-  end interface
 
-  ! htons
-  interface
     integer(c_short) function c_htons(hostshort) bind(C, name='htons')
       use, intrinsic :: iso_c_binding
       integer(kind=c_short), value :: hostshort
     end function c_htons
-  end interface
 
-  ! inet_addr
-  interface
     integer(c_int) function c_inet_addr(cp) bind(C, name='inet_addr')
       use, intrinsic :: iso_c_binding
       character(kind=c_char), dimension(*) :: cp
     end function c_inet_addr
-  end interface
 
-  ! getaddrinfo
-  ! this is not directly portable, since hints is a pointer to an `addrinfo` struct, which
-  ! itself contains pointers, and this type of data structure is not interoperable
-  interface
+    ! getaddrinfo
+    ! this is not completely portable, since hints is a pointer to an `addrinfo` struct, which
+    ! itself contains pointers, and this type of data structure is not completely interoperable
     integer(c_int) function c_getaddrinfo(hostname, servname, hints, res) bind(C, name='getaddrinfo')
       use, intrinsic :: iso_c_binding
       type(c_ptr), value :: hostname, servname, hints, res
     end function c_getaddrinfo
-  end interface
 
-  interface
     type(c_ptr) function c_inet_ntop(af, src, dst, dst_size) bind(C, name='inet_ntop')
       use, intrinsic :: iso_c_binding
       integer(c_int), value :: af, dst_size
       type(c_ptr), value :: src
       character(c_char) :: dst
     end function c_inet_ntop
-  end interface
 
-  ! listen
-  interface
     integer(c_int) function c_listen(sockfd, backlog) bind(C, name='listen')
       use, intrinsic :: iso_c_binding
       integer(kind=c_int), value :: sockfd, backlog
     end function c_listen
-  end interface
 
-  ! send
-  interface
     integer(c_size_t) function c_send(sockfd, buffer, length, flags) bind(c, name='send')
       use, intrinsic :: iso_c_binding
       integer(c_int), value :: sockfd
@@ -203,26 +171,17 @@ module posix
       integer(c_size_t), value :: length
       integer(c_int), value :: flags
     end function c_send
-  end interface
 
-  ! fork
-  interface
     integer(c_int) function c_fork() bind(C, name='fork')
       use, intrinsic :: iso_c_binding
     end function c_fork
-  end interface
 
-  ! accept
-  interface
     integer(c_int) function c_accept(socket, address, address_len) bind(c, name='accept')
       use, intrinsic :: iso_c_binding
       integer(c_int), value :: socket
       type(c_ptr), value :: address, address_len
     end function c_accept
-  end interface
 
-  ! close
-  interface
     integer(c_int) function c_close(fd) bind(c, name='close')
       use, intrinsic :: iso_c_binding
       integer(c_int), value :: fd
