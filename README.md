@@ -1,7 +1,7 @@
 This repo contains experimental code porting some simple C server code from [Beej's Guide to Network Programming](http://beej.us/guide/bgnet/output/html/singlepage/bgnet.html)
 to Fortran.
 
-Running `./server_fortran` will bind to port 3491, send "hello world" to clients that connect, with `nc localhost 3491` for example, and print the connecting IP address.
+Running `./server` will bind to port 3491, send "hello world" to clients that connect, with `nc localhost 3491` for example, and print the connecting IP address.
 
 It should work on OSX, and hopefully, eventually, other platforms as well.
 
@@ -22,4 +22,4 @@ the only way to get this code to work.
 
 Passes `-g` flag to compilers for debugging aid.
 
-Run `make` to compile, then `./server_fortran`.
+Run `make` to compile, then `./server`.

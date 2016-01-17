@@ -1,0 +1,4 @@
+*.mod
+*.dylib
+*.dSYM
+server
