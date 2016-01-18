@@ -118,7 +118,7 @@ program server
   do
     newfd = c_accept(sockfd, c_loc(their_addr), c_loc(my_sockaddr_storage_size))
 
-    call c_my_inet_ntop(c_loc(their_addr), c_loc(ipaddrstr), 46)
+    call c_my_inet_ntop(c_loc(their_addr), c_loc(ipaddrstr), INET6_ADDRSTRLEN)
     call c_f_string(c_loc(ipaddrstr), ipaddrstr)
     print *, 'connection from ', ipaddrstr
 
