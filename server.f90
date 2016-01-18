@@ -13,16 +13,6 @@ program server
       use, intrinsic :: iso_c_binding
     end function sockaddr_storage_size
 
-    subroutine c_get_sockaddr_info(ptr) bind(c, name='get_sockaddr_info')
-      use, intrinsic :: iso_c_binding
-      type(c_ptr), value :: ptr
-    end subroutine c_get_sockaddr_info
-
-    type(c_ptr) function c_get_in_addr(ptr) bind(c, name='get_in_addr')
-      use, intrinsic :: iso_c_binding
-      type(c_ptr), value :: ptr
-    end function c_get_in_addr
-
     subroutine c_my_inet_ntop(their_addr, buff, buff_size) bind(c, name='my_inet_ntop')
       use, intrinsic :: iso_c_binding
       type(c_ptr), value :: their_addr, buff
