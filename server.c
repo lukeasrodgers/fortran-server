@@ -41,23 +41,6 @@ void *get_in_addr(struct sockaddr *sa)
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
-// get port, IPv4 or IPv6:
-void print_in_port(struct sockaddr *sa)
-{
-    in_port_t port;
-    if (sa->sa_family == AF_INET) {
-      printf("afint\n");
-        port = (((struct sockaddr_in*)sa)->sin_port);
-    }
-    else {
-      printf("afint6\n");
-        port = (((struct sockaddr_in6*)sa)->sin6_port);
-    }
-
-    printf("port is %d\n",ntohs(port));
-    return;
-}
-
 // We can't use normal inet_ntop because it involves structs with pointers, which
 // are not interoperable between C and Fortran.
 void my_inet_ntop(struct sockaddr_storage *their_addr, char *buff, int buf_size) {

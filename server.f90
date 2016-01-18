@@ -29,11 +29,6 @@ program server
       integer(c_int) :: buff_size
     end subroutine c_my_inet_ntop
 
-    subroutine c_print_in_port(ptr) bind(c, name='print_in_port')
-      use, intrinsic :: iso_c_binding
-      type(c_ptr), value :: ptr
-    end subroutine c_print_in_port
-
     integer(c_int) function c_errno() bind(c, name='my_errno')
       use, intrinsic :: iso_c_binding
     end function c_errno
@@ -81,7 +76,6 @@ program server
   end if
 
   call c_f_pointer(servinfo_ptr, p)
-  call c_print_in_port(p%ai_addr)
 
   do
     if (c_associated(c_loc(p)) .eqv. .false.) then
@@ -130,8 +124,8 @@ program server
     call exit(1)
   end if
 
+  print *, 'waiting for connection on ', sockaddr_port(p%ai_addr)
   do
-    print *, 'waiting for connection'
     newfd = c_accept(sockfd, c_loc(their_addr), c_loc(my_sockaddr_storage_size))
 
     call c_my_inet_ntop(c_loc(their_addr), c_loc(ipaddrstr), 46)
@@ -152,5 +146,24 @@ program server
       call exit(0)
     endif
   end do
+
+  contains
+
+    integer(c_short) function sockaddr_port(sockaddr_ptr)
+      type(c_ptr), value, intent(in) :: sockaddr_ptr
+      type(c_sockaddr), pointer :: sa
+      type(c_sockaddr_in), pointer :: sa_in
+      type(c_sockaddr_in6), pointer :: sa_in6
+      integer(c_short) :: port
+      call c_f_pointer(sockaddr_ptr, sa)
+      if (ichar(sa%sa_family) == AF_INET) then
+        call c_f_pointer(sockaddr_ptr, sa_in)
+        port = sa_in%sin_port
+      else
+        call c_f_pointer(sockaddr_ptr, sa_in6)
+        port = sa_in6%sin6_port
+      end if
+      sockaddr_port = c_ntohs(port)
+    end function sockaddr_port
 
 end program server

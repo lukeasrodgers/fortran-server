@@ -189,6 +189,11 @@ module posix
       use, intrinsic :: iso_c_binding
       integer(c_int), value :: fd
     end function c_close
+
+    integer(c_short) function c_ntohs(netshort) bind(c, name='ntohs')
+      use, intrinsic :: iso_c_binding
+      integer(c_short), value :: netshort
+    end function c_ntohs
   end interface
 
 end module posix
