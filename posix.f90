@@ -86,6 +86,9 @@ module posix
   end type c_sockaddr_storage
 
   
+  ! `man 2 getaddrinfo` and other documentation show ai_addr before ai_canonname, but inspection with a debugger shows the reverse
+  ! and reversing their position is the only way to get this to work.
+  ! probably only works on osx
   type, bind(C) :: c_addrinfo
     integer(c_int) :: ai_flags
     integer(c_int) :: ai_family
