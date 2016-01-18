@@ -81,64 +81,45 @@ program server
   end if
 
   call c_f_pointer(servinfo_ptr, p)
-  print *, 'ai_family: ', p%ai_family
-  print *, 'ai_addrlen: ', p%ai_addrlen
-  print *, 'ai_addr: ', p%ai_addr
-  print *, 'ai_cannon: ', p%ai_canonname
-  ! call c_f_pointer(p%ai_addr, mysockaddr)
-  print *, 'from fortran, port is: '
   call c_print_in_port(p%ai_addr)
 
   do
-    print *, 'try'
     if (c_associated(c_loc(p)) .eqv. .false.) then
-      print *, 'did not work'
+      print *, 'could not establish socket on any interfaces'
       call exit(1)
     end if
     sockfd = c_socket(p%ai_family, p%ai_socktype, p%ai_protocol)
     if (sockfd == -1) then
-      print *, 'no sock'
+      ! could not open socket
       call c_f_pointer(p%ai_next, p)
       cycle
-    else
-      print *, 'sock!'
     end if
 
     res = c_setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, c_loc(yes), c_loc(optlen))
     if (res == -1) then
-      print *, 'nosockopt, exit'
+      print *, 'could not set sockopts despite having created socket'
       call exit(1)
-    else
-      print *, 'set sockopt'
     end if
 
-    print *, 'sockfd', sockfd
     res = c_bind(sockfd, p%ai_addr, p%ai_addrlen)
     if (res == -1) then
-      print *, 'bind fail'
+      print *, 'failed to bind'
       closed = c_close(sockfd)
       call c_f_pointer(p%ai_next, p)
       cycle
     else
-      print *, 'bound'
+      ! bound, we're done, can break out of loop
       exit
     end if
   end do
 
-  if (sockfd == 1) then
-    print *, 'failed to establish server'
-    call exit(1)
-  end if
-
-  print *, 'going to listen'
   res = c_listen(sockfd, backlog)
 
   if (res /= 0) then
     print *, 'failed to listen'
     res = c_errno()
-    print *, 'errno ', res
     if (res == 9) then
-      print *, 'socket is not a valid fd', sockfd
+      print *, 'socket is not a valid file descriptor', sockfd
     end if
     call exit(1)
   end if
