@@ -60,9 +60,10 @@ module posix
 
   ! this may be cast to a C sockaddr struct
   type, bind(C) :: c_sockaddr_in
-    integer(c_short) :: sin_family
-    integer(c_short) :: sin_port
-    type(c_ptr) :: sin_addr
+    character(c_char) :: sin_len
+    character(c_char) :: sin_family
+    integer(c_short) :: sin_port ! osx is in_port_t, aka __uint16_t
+    type(c_in_addr) :: sin_addr
     character(kind=c_char) :: sin_zero
   end type c_sockaddr_in
 
@@ -75,11 +76,12 @@ module posix
     integer(c_long) :: sin6_scope_id
   end type c_sockaddr_in6
 
-  ! This type cannot be accurately defined in Fortran.
+  ! This type (probably) cannot be accurately defined in Fortran.
   ! Some functions, e.g. `accept(2)` require the size of this struct to be passed in, so 
   ! we have to make a separate C call to get that value
   type, bind(C) :: c_sockaddr_storage
-    character(c_char) :: ss_family
+    character(c_char) :: ss_len ! osx includes this field as __uint8_t
+    character(c_char) :: ss_family ! on osx this is sa_family_t, which is __uint8_t
     character(kind=c_char,len=1) :: ss_pad1
     integer(kind=c_long) :: ss_align
     character(kind=c_char,len=1) :: ss_pad2
