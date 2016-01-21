@@ -15,8 +15,6 @@
 #include <sys/wait.h>
 #include <signal.h>
 
-#define BACKLOG 10     // how many pending connections queue will hold
-
 void sigchld_handler(int s)
 {
     // waitpid() might overwrite errno, so we save and restore it:
