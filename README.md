@@ -9,9 +9,9 @@ I'm learning Fortran, and this seemed like an interesting challenge. I don't thi
 
 ## Running the code
 
-Passes `-g` flag to compilers for debugging aid.
-
 Run `make` to compile, then `./server`.  This will bind to port 3491, send "hello world" to clients that connect, with `nc localhost 3491` for example, and print the connecting IP address.
+
+The makefile passes the `-g` flag to compilers for debugging aid.
 
 ## Notes on the code
 
@@ -25,8 +25,7 @@ Some functionality is still currently implemented in C, e.g.:
 
 * `posix.f90` isn't really properly named, since not all of the interfaces in there are strictly POSIX, I think, and some of the BSD/XNU stuff isn't strictly POSIX compliant.
 * More of the code could probably be moved out of server.c into server.f90.
-* `man 2 getaddrinfo`, and other documentation, describe `addrinfo` structs as having `ai_canonname` **after** `ai_addr` but inspection in LLDB shows it coming before, and that layout is
+* `man 3 getaddrinfo`, and other documentation, describe `addrinfo` structs as having `ai_canonname` *after* `ai_addr` but inspection in LLDB shows it coming before, and that layout is
 the only way to get this code to work.
 * the Fortran code that prepares the call to `inet_ntop` has to use some ugly workarounds for the fact that calling `c_loc` on nested derived types is not fully c-interoperable. Also, this 
 code is probably broken for ipv6.
-* osx `man 3 getaddrinfo` has incorrect documentation for the layout of addrinfo: it lists `ai_addr` as *before* `ai_canonname`, when in actuality they are reversed
