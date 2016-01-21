@@ -67,6 +67,22 @@ module posix
     character(kind=c_char) :: sin_zero
   end type c_sockaddr_in
 
+  ! HACK:
+  ! Derived types with embedded derived types are not fully c-compatible.
+  ! Specifically, calling `c_loc` intrinsic on an embedded derived type will
+  ! not return the correct value (in the case of c_sockaddr_in, it was 4 bytes
+  ! past where it should be. To compensate, we can use an intentionally incorrectly
+  ! laid-out derived type, where calling `c_loc` on `sin_addr` will work
+  ! correctly.
+  ! This is probably *highly* non-interoperable across compilers and/or platforms.
+  type, bind(C) :: c_sockaddr_in_resized
+    character(c_char) :: sin_len
+    character(c_char) :: sin_family
+    integer(c_short) :: sin_port ! osx is in_port_t, aka __uint16_t
+    character(c_char) :: sin_addr
+    character(kind=c_char) :: sin_zero
+  end type c_sockaddr_in_resized
+
   ! this may be cast to a C sockaddr struct
   type, bind(C) :: c_sockaddr_in6
     integer(c_short) :: sin6_family

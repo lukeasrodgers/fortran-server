@@ -13,15 +13,10 @@ program server
       use, intrinsic :: iso_c_binding
     end function sockaddr_storage_size
 
-    subroutine c_my_inet_ntop(their_addr, buff, buff_size) bind(c, name='my_inet_ntop')
-      use, intrinsic :: iso_c_binding
-      type(c_ptr), value :: their_addr, buff
-      integer(c_int) :: buff_size
-    end subroutine c_my_inet_ntop
-
     integer(c_int) function c_errno() bind(c, name='my_errno')
       use, intrinsic :: iso_c_binding
     end function c_errno
+
   end interface
 
   integer(c_int), parameter :: INET6_ADDRSTRLEN = 46 ! freebsd in6.h defines this value
@@ -118,7 +113,7 @@ program server
   do
     newfd = c_accept(sockfd, c_loc(their_addr), c_loc(my_sockaddr_storage_size))
 
-    call c_my_inet_ntop(c_loc(their_addr), c_loc(ipaddrstr), INET6_ADDRSTRLEN)
+    call my_inet_ntop(their_addr, ipaddrstr)
     call c_f_string(c_loc(ipaddrstr), ipaddrstr)
     print *, 'connection from ', ipaddrstr
 
@@ -155,5 +150,27 @@ program server
       end if
       sockaddr_port = c_ntohs(port)
     end function sockaddr_port
+
+    subroutine my_inet_ntop(their_addr, buff)
+      type(c_sockaddr_storage), target, intent(in) :: their_addr
+      character(len=INET6_ADDRSTRLEN), target, intent(out) :: buff
+
+      type(c_sockaddr), pointer :: sa
+      type(c_sockaddr_in_resized), pointer :: sa_in
+      type(c_sockaddr_in6), pointer :: sa_in6
+
+      type(C_void_ptr) :: res
+
+      call c_f_pointer(c_loc(their_addr), sa)
+      if (ichar(sa%sa_family) == AF_INET) then
+        call c_f_pointer(c_loc(their_addr), sa_in)
+        res = c_inet_ntop(ichar(their_addr%ss_family), c_loc(sa_in%sin_addr), c_loc(buff), INET6_ADDRSTRLEN)
+      else
+        call c_f_pointer(c_loc(their_addr), sa_in6)
+        res = c_inet_ntop(ichar(their_addr%ss_family), c_loc(sa_in6%sin6_addr), c_loc(buff), INET6_ADDRSTRLEN)
+      end if
+
+      call c_f_string(c_loc(buff), buff)
+    end subroutine my_inet_ntop
 
 end program server
