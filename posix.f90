@@ -161,7 +161,7 @@ module posix
       use, intrinsic :: iso_c_binding
       integer(c_int), value :: af, dst_size
       type(c_ptr), value :: src
-      character(c_char) :: dst
+      type(c_ptr), value :: dst
     end function c_inet_ntop
 
     integer(c_int) function c_listen(sockfd, backlog) bind(C, name='listen')
