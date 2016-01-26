@@ -30,8 +30,7 @@ int my_errno() {
 }
 
 int sockaddr_storage_size() {
-  struct sockaddr_storage foo;
-  return sizeof foo;
+  return sizeof(struct sockaddr_storage);
 }
 
 int just_handle() {
