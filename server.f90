@@ -16,7 +16,6 @@ program server
     integer(c_int) function c_errno() bind(c, name='my_errno')
       use, intrinsic :: iso_c_binding
     end function c_errno
-
   end interface
 
   integer(c_int), parameter :: INET6_ADDRSTRLEN = 46 ! freebsd in6.h defines this value
