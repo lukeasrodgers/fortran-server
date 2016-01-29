@@ -13,6 +13,13 @@ Run `make` to compile, then `./server`.  This will bind to port 3491, send "hell
 
 The makefile passes the `-g` flag to compilers for debugging aid.
 
+### Compiling/running on linux...
+
+...currently sucks
+
+* you will need to modify `LD_LIBRARY_PATH` to include the current folder to get server.so. I'm sure there is a better, standard way of handling this scenario but I don't know it yet.
+* couldn't get newer version of gfortran installed/running on linux, again do shared lib files, so a bunch of things are uglier/don't work (e.g. pointer type aliases)
+
 ## Notes on the code
 
 It uses some modern Fortran 2003 features, like `c_f_pointer` and `c_loc`, as well as some utility methods from Joseph Krahn's [c\_interface\_module](http://fortranwiki.org/fortran/show/c_interface_module).
