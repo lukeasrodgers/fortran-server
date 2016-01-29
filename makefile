@@ -15,7 +15,7 @@ else
 endif
 
 server: $(DYLIB)
-	gfortran $(CCFLAGS) -L. -g server.f90 $(POSIXFILE) c_interface_module.f90 server.so -o server
+	gfortran $(CCFLAGS) -L./ -g $(POSIXFILE) c_interface_module.f90 server.f90 -lserver -o server
 
 $(DYLIB):
 ifeq ($(UNAME_S),Linux)
