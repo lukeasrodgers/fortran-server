@@ -4,21 +4,27 @@ else
     UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Linux)
         CCFLAGS += -D LINUX
-				POSIXFILE = linux-posix.f90
+	POSIXFILE = linux-posix.f90
+	DYLIB := server.so
     endif
     ifeq ($(UNAME_S),Darwin)
         CCFLAGS += -D OSX
-				POSIXFILE = osx-posix.f90
+	POSIXFILE = osx-posix.f90
+	DYLIB := server.dylib
     endif
 endif
 
-server: server.dylib
-	gfortran $(CCFLAGS) -g $(POSIXFILE) c_interface_module.f90 server.dylib -cpp server.f90 -o server
+server: $(DYLIB)
+	gfortran $(CCFLAGS) -L. -g server.f90 $(POSIXFILE) c_interface_module.f90 server.so -o server
 
-server.dylib:
-	gcc -g -dynamiclib server.c -o server.dylib
+$(DYLIB):
+ifeq ($(UNAME_S),Linux)
+	gcc -fPIC -g -shared server.c -o $@
+else
+	gcc -g -dynamiclib server.c -o $@
+endif
 
 clean: 
-	rm -f server.dylib server posix.mod c_interface_module.mod
+	rm -f server.dylib server posix.mod c_interface_module.mod server.so
 	rm -rf server.dylib.dSYM/
 	rm -rf server.dSYM/

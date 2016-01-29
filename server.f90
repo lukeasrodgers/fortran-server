@@ -16,6 +16,7 @@ program server
     integer(c_int) function c_errno() bind(c, name='my_errno')
       use, intrinsic :: iso_c_binding
     end function c_errno
+
   end interface
 
   integer(c_int), parameter :: INET6_ADDRSTRLEN = 46 ! freebsd in6.h defines this value
@@ -29,12 +30,12 @@ program server
   integer pid
   integer(c_size_t) message_len
   type(c_sockaddr), pointer :: mysockaddr
-  character(len=INET6_ADDRSTRLEN), target :: ipaddrstr
-  character(len=20), target :: message
-  character(len=7), target :: port
+  character(len=1), target :: ipaddrstr
+  character(len=1), target :: message
+  character(len=1), target :: port
   type(c_addrinfo), target :: addrinfo_hints, servinfo
   type(c_addrinfo), pointer :: p
-  type(C_void_ptr) :: n
+  type(C_ptr) :: n
   integer(c_int) :: rv, res
   integer(c_int), target :: yes = 1, optlen = 4
   type(c_ptr), target :: servinfo_ptr
@@ -152,13 +153,13 @@ program server
 
     subroutine my_inet_ntop(their_addr, buff)
       type(c_sockaddr_storage), target, intent(in) :: their_addr
-      character(len=INET6_ADDRSTRLEN), target, intent(out) :: buff
+      character(len=1), target, intent(out) :: buff
 
       type(c_sockaddr), pointer :: sa
       type(c_sockaddr_in_resized), pointer :: sa_in
       type(c_sockaddr_in6), pointer :: sa_in6
 
-      type(C_void_ptr) :: res
+      type(C_ptr) :: res
 
       call c_f_pointer(c_loc(their_addr), sa)
       if (ichar(sa%sa_family) == AF_INET) then
