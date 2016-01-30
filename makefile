@@ -5,17 +5,19 @@ else
     ifeq ($(UNAME_S),Linux)
         CCFLAGS += -D LINUX
 	POSIXFILE = linux-posix.f90
-	DYLIB := server.so
+	DYLIB := libserver.so
+	LINKING := -L./ -lserver
     endif
     ifeq ($(UNAME_S),Darwin)
         CCFLAGS += -D OSX
 	POSIXFILE = osx-posix.f90
 	DYLIB := server.dylib
+	LINKING := $(DYLIB)
     endif
 endif
 
 server: $(DYLIB)
-	gfortran $(CCFLAGS) -L./ -g $(POSIXFILE) c_interface_module.f90 server.f90 -lserver -o server
+	gfortran $(CCFLAGS) -g $(POSIXFILE) c_interface_module.f90 server.f90 $(DYLIB) -o server
 
 $(DYLIB):
 ifeq ($(UNAME_S),Linux)
