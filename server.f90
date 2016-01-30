@@ -153,6 +153,7 @@ program server
     subroutine my_inet_ntop(their_addr, buff)
       type(c_sockaddr_storage), target, intent(in) :: their_addr
       character(len=INET6_ADDRSTRLEN), target, intent(out) :: buff
+      character(kind=c_char,len=1), target :: c_buff(INET6_ADDRSTRLEN)
 
       type(c_sockaddr), pointer :: sa
       type(c_sockaddr_in_resized), pointer :: sa_in
@@ -163,13 +164,13 @@ program server
       call c_f_pointer(c_loc(their_addr), sa)
       if (ichar(sa%sa_family) == AF_INET) then
         call c_f_pointer(c_loc(their_addr), sa_in)
-        res = c_inet_ntop(ichar(their_addr%ss_family), c_loc(sa_in%sin_addr), c_loc(buff), INET6_ADDRSTRLEN)
+        res = c_inet_ntop(ichar(their_addr%ss_family), c_loc(sa_in%sin_addr), c_loc(c_buff), INET6_ADDRSTRLEN)
       else
         call c_f_pointer(c_loc(their_addr), sa_in6)
-        res = c_inet_ntop(ichar(their_addr%ss_family), c_loc(sa_in6%sin6_addr), c_loc(buff), INET6_ADDRSTRLEN)
+        res = c_inet_ntop(ichar(their_addr%ss_family), c_loc(sa_in6%sin6_addr), c_loc(c_buff), INET6_ADDRSTRLEN)
       end if
 
-      call c_f_string(c_loc(buff), buff)
+      call c_f_string(c_buff, buff)
     end subroutine my_inet_ntop
 
 end program server
