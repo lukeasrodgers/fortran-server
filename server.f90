@@ -114,7 +114,6 @@ program server
     newfd = c_accept(sockfd, c_loc(their_addr), c_loc(my_sockaddr_storage_size))
 
     call my_inet_ntop(their_addr, ipaddrstr)
-    call c_f_string(c_loc(ipaddrstr), ipaddrstr)
     print *, 'connection from ', ipaddrstr
 
     pid = c_fork() 
