@@ -96,18 +96,14 @@ module posix
     character(kind=c_char,len=1) :: ss_pad2
   end type c_sockaddr_storage
 
-  
-  ! `man 3 getaddrinfo` and other documentation show ai_addr before ai_canonname, but inspection with a debugger shows the reverse
-  ! and reversing their position is the only way to get this to work.
-  ! probably only works on osx
   type, bind(C) :: c_addrinfo
     integer(c_int) :: ai_flags
     integer(c_int) :: ai_family
     integer(c_int) :: ai_socktype
     integer(c_int) :: ai_protocol
     integer(c_size_t) :: ai_addrlen
-    type(c_ptr) :: ai_canonname
     type(c_ptr) :: ai_addr
+    type(c_ptr) :: ai_canonname
     type(c_ptr) :: ai_next
   end type c_addrinfo
 
@@ -137,8 +133,8 @@ module posix
 
     integer(c_int) function c_setsockopt(socket, level, option_name, option_value, option_len) bind(c, name='setsockopt')
       use, intrinsic :: iso_c_binding
-      integer(c_int), value :: socket, level, option_name
-      type(c_ptr), value :: option_value, option_len
+      integer(c_int), value :: socket, level, option_name, option_len
+      type(c_ptr), value :: option_value
     end function c_setsockopt
 
     integer(c_int) function c_bind(sockfd, sockaddr, addrlen) bind(C, name='bind')
@@ -181,9 +177,9 @@ module posix
     integer(c_size_t) function c_send(sockfd, buffer, length, flags) bind(c, name='send')
       use, intrinsic :: iso_c_binding
       integer(c_int), value :: sockfd
-      type(c_ptr), value :: buffer
       integer(c_size_t), value :: length
       integer(c_int), value :: flags
+      character(kind=c_char), dimension(*) :: buffer
     end function c_send
 
     integer(c_int) function c_fork() bind(C, name='fork')

@@ -30,9 +30,10 @@ program server
   integer pid
   integer(c_size_t) message_len
   type(c_sockaddr), pointer :: mysockaddr
-  character(len=1), target :: ipaddrstr
-  character(len=1), target :: message
-  character(len=1), target :: port
+  character(len=INET6_ADDRSTRLEN), target :: ipaddrstr
+  character(kind=c_char), target :: message(20)
+  character(kind=c_char), target :: port(7)
+  character(kind=c_char), target :: c_port, c_message
   type(c_addrinfo), target :: addrinfo_hints, servinfo
   type(c_addrinfo), pointer :: p
   type(C_ptr) :: n
@@ -67,18 +68,17 @@ program server
       print *, 'could not establish socket on any interfaces'
       call exit(1)
     end if
+    print *, 'ai proto', p%ai_protocol
+    print *, 'ai family', p%ai_family
+    print *, 'ai socktyp', p%ai_socktype
     sockfd = c_socket(p%ai_family, p%ai_socktype, p%ai_protocol)
     if (sockfd == -1) then
+print *, 'coul not open sock'
       ! could not open socket
       call c_f_pointer(p%ai_next, p)
       cycle
     end if
 
-    res = c_setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, c_loc(yes), c_loc(optlen))
-    if (res == -1) then
-      print *, 'could not set sockopts despite having created socket'
-      call exit(1)
-    end if
 
     res = c_bind(sockfd, p%ai_addr, p%ai_addrlen)
     if (res == -1) then
@@ -125,7 +125,7 @@ program server
       ! child
       closed = c_close(sockfd)
       message_len = 13
-      sent = c_send(newfd, c_loc(message), message_len, 0)
+      sent = c_send(newfd, "hello, world"//C_NULL_char, message_len, 0)
       closed = c_close(newfd)
       call exit(0)
     endif
