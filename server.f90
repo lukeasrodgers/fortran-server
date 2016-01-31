@@ -79,7 +79,6 @@ print *, 'coul not open sock'
       cycle
     end if
 
-    res = c_setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, c_loc(yes), optlen)
 
     res = c_bind(sockfd, p%ai_addr, p%ai_addrlen)
     if (res == -1) then
