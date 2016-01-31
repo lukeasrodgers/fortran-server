@@ -17,8 +17,8 @@ module posix
   integer, parameter :: SOCK_SEQPACKET = 5
 
   ! sys/socket.h
-  integer, parameter :: SOL_SOCKET = 65535
-  integer, parameter :: SO_REUSEADDR = 4
+  integer, parameter :: SOL_SOCKET = 1
+  integer, parameter :: SO_REUSEADDR = 2
 
   ! netdb.h
   integer, parameter :: AI_PASSIVE = 1
