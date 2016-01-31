@@ -38,7 +38,7 @@ program server
   type(c_addrinfo), pointer :: p
   type(C_ptr) :: n
   integer(c_int) :: rv, res
-  integer(c_int), target :: yes = 1, optlen = 4
+  integer(c_int), target :: yes = 1, optlen = 2
   type(c_ptr), target :: servinfo_ptr
   ! initialize addrinfo_hints to 0
   n = C_memset(c_loc(addrinfo_hints), 0, sizeof(addrinfo_hints))
@@ -79,6 +79,7 @@ print *, 'coul not open sock'
       cycle
     end if
 
+    res = c_setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, c_loc(yes), optlen)
 
     res = c_bind(sockfd, p%ai_addr, p%ai_addrlen)
     if (res == -1) then
